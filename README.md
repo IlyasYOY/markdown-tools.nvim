@@ -13,7 +13,7 @@ vault plugin, formatter, package manager, or personal paths.
 
 ## Installation
 
-With Neovim's built-in package manager:
+With Neovim 0.12 or newer, use the built-in `vim.pack`:
 
 ```lua
 vim.pack.add {
@@ -25,6 +25,18 @@ Then call `setup()`:
 
 ```lua
 require("markdown-tools").setup()
+```
+
+Neovim 0.11 users should install the plugin with lazy.nvim or another package
+manager.
+
+With [lazy.nvim](https://github.com/folke/lazy.nvim):
+
+```lua
+{
+    "IlyasYOY/markdown-tools.nvim",
+    opts = {},
+}
 ```
 
 ## Configuration
@@ -177,11 +189,22 @@ markdown_tools.generate_pdf {
 `require("markdown-tools").links.wrap_lines()` and
 `require("markdown-tools").tasks.cycle_line()`.
 
+## Health
+
+Run `:checkhealth markdown-tools` to inspect Neovim, the optional Markdown
+Tree-sitter parsers, and the Pandoc and Typst executables configured for PDF
+generation. Missing optional tools are warnings and do not prevent the plugin
+from loading.
+
+See `:help markdown-tools` for the complete Vim help reference.
+
 ## Development
 
 ```bash
 make check
 make test NVIM_VERSION=v0.11.7
+make test NVIM_VERSION=v0.12.4
+make test NVIM_VERSION=nightly
 make test-pdf-e2e
 ```
 

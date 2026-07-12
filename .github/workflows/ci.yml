@@ -1,0 +1,111 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Lua and Luacheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends lua5.1 luarocks
+          sudo luarocks install luacheck 1.2.0-1
+
+      - name: Install StyLua
+        uses: JohnnyMorganz/stylua-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: 2.5.2
+          args: false
+
+      - name: Lint
+        run: make lint
+
+  test:
+    name: Test ${{ matrix.os }} / Neovim ${{ matrix.nvim_version }}
+    needs: lint
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            nvim_version: v0.11.7
+            experimental: false
+          - os: macos-latest
+            nvim_version: v0.11.7
+            experimental: false
+          - os: ubuntu-latest
+            nvim_version: v0.12.4
+            experimental: false
+          - os: macos-latest
+            nvim_version: v0.12.4
+            experimental: false
+          - os: ubuntu-latest
+            nvim_version: nightly
+            experimental: true
+          - os: macos-latest
+            nvim_version: nightly
+            experimental: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Restore stable Neovim cache
+        if: ${{ !matrix.experimental }}
+        uses: actions/cache@v5
+        with:
+          path: .test-deps
+          key: ${{ runner.os }}-${{ runner.arch }}-nvim-${{ matrix.nvim_version }}-${{ hashFiles('Makefile') }}
+
+      - name: Test
+        run: make test help-check NVIM_VERSION=${{ matrix.nvim_version }}
+
+  pdf-e2e:
+    name: PDF E2E / Pandoc 3.10 / Typst 0.15.0
+    needs: lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Restore Neovim cache
+        uses: actions/cache@v5
+        with:
+          path: .test-deps
+          key: ${{ runner.os }}-${{ runner.arch }}-nvim-v0.11.7-${{ hashFiles('Makefile') }}
+
+      - name: Install Pandoc
+        uses: pandoc/actions/setup@v1
+        with:
+          version: "3.10"
+
+      - name: Install Typst
+        uses: typst-community/setup-typst@v5
+        with:
+          typst-version: "0.15.0"
+
+      - name: Generate a real PDF
+        run: make test-pdf-e2e NVIM_VERSION=v0.11.7

@@ -1,0 +1,12 @@
+:MarkdownToolsCycleTask	markdown-tools.txt	/*:MarkdownToolsCycleTask*
+:MarkdownToolsPdf	markdown-tools.txt	/*:MarkdownToolsPdf*
+:MarkdownToolsWrapLinks	markdown-tools.txt	/*:MarkdownToolsWrapLinks*
+markdown-tools	markdown-tools.txt	/*markdown-tools*
+markdown-tools-api	markdown-tools.txt	/*markdown-tools-api*
+markdown-tools-commands	markdown-tools.txt	/*markdown-tools-commands*
+markdown-tools-fallback	markdown-tools.txt	/*markdown-tools-fallback*
+markdown-tools-health	markdown-tools.txt	/*markdown-tools-health*
+markdown-tools-pdf	markdown-tools.txt	/*markdown-tools-pdf*
+markdown-tools-requirements	markdown-tools.txt	/*markdown-tools-requirements*
+markdown-tools-setup	markdown-tools.txt	/*markdown-tools-setup*
+markdown-tools.txt	markdown-tools.txt	/*markdown-tools.txt*

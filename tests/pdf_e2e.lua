@@ -2,8 +2,10 @@ local M = {}
 
 function M.run()
     local root = vim.fn.getcwd()
-    local input = vim.fs.joinpath(root, ".test-work", "pdf", "sample.md")
-    local output = vim.fs.joinpath(root, ".test-work", "pdf", "sample.pdf")
+    local test_work = vim.env.MARKDOWN_TOOLS_TEST_WORK
+        or vim.fs.joinpath(root, ".test-work")
+    local input = vim.fs.joinpath(test_work, "pdf", "sample.md")
+    local output = vim.fs.joinpath(test_work, "pdf", "sample.pdf")
     vim.cmd.edit(vim.fn.fnameescape(input))
     vim.bo.filetype = "markdown"
     require("markdown-tools").setup()

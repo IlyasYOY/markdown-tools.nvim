@@ -8,4 +8,9 @@ ignore = {
 
 read_globals = {
     "vim",
+    "assert",
+    "describe",
+    "it",
+    "before_each",
+    "after_each",
 }

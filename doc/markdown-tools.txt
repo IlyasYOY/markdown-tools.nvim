@@ -9,6 +9,7 @@ CONTENTS                                                   *markdown-tools*
 4. Lua API                                   |markdown-tools-api|
 5. Link fallback                             |markdown-tools-fallback|
 6. PDF                                       |markdown-tools-pdf|
+7. Health                                    |markdown-tools-health|
 
 ==============================================================================
 1. Requirements                              *markdown-tools-requirements*
@@ -134,5 +135,17 @@ The default sibling output replaces the final source extension with `.pdf`.
 `pdf.preprocess(content, context)` runs synchronously before Pandoc and must
 return a string. `pdf.output_path(context)` must return a non-empty path.
 Context contains bufnr, input_path, output_path (preprocess only), and cwd.
+
+==============================================================================
+7. Health                                    *markdown-tools-health*
+
+Run: >vim
+
+    :checkhealth markdown-tools
+<
+The provider reports Neovim, the optional `markdown` and
+`markdown_inline` Tree-sitter parsers, and the configured Pandoc and Typst
+executables. Missing optional parsers or PDF tools are warnings and do not
+prevent other features from loading.
 
 vim:tw=78:ts=8:noet:ft=help:norl:
