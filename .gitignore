@@ -1,0 +1,4 @@
+.test-deps/
+.test-home/
+.test-work/
+nvim.log

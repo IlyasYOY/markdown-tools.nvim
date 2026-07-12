@@ -1,0 +1,138 @@
+*markdown-tools.txt*        Reusable Markdown tools for Neovim
+
+==============================================================================
+CONTENTS                                                   *markdown-tools*
+
+1. Requirements                              |markdown-tools-requirements|
+2. Setup                                     |markdown-tools-setup|
+3. Commands                                  |markdown-tools-commands|
+4. Lua API                                   |markdown-tools-api|
+5. Link fallback                             |markdown-tools-fallback|
+6. PDF                                       |markdown-tools-pdf|
+
+==============================================================================
+1. Requirements                              *markdown-tools-requirements*
+
+Neovim 0.11 or newer is required. The `markdown` and `markdown_inline`
+Tree-sitter parsers are optional. Pandoc and Typst are needed only when PDF
+generation is invoked. No vault plugin, formatter, Mason package, or external
+Neovim plugin is required.
+
+==============================================================================
+2. Setup                                     *markdown-tools-setup*
+
+Call setup explicitly: >lua
+
+    require("markdown-tools").setup {
+        links = { enabled = true, treesitter = "auto" },
+        tasks = { enabled = true, marker = "-" },
+        pdf = { enabled = true },
+        formatting = { enabled = true },
+        keymaps = {
+            wrap_links = "<localleader>L",
+            cycle_task = "<localleader>t",
+        },
+    }
+<
+All keymaps default to false. Feature tables accept false as shorthand for
+`{ enabled = false }`. Command names may be changed or set to false:
+
+    commands.wrap_links    "MarkdownToolsWrapLinks"
+    commands.cycle_task    "MarkdownToolsCycleTask"
+    commands.pdf           "MarkdownToolsPdf"
+
+Mappings are buffer-local and support these keys:
+
+    keymaps.wrap_links     normal mode
+    keymaps.cycle_task     normal mode
+    keymaps.pdf            normal mode
+    keymaps.italic         visual mode
+    keymaps.bold           visual mode
+    keymaps.code           visual mode
+    keymaps.link           visual mode
+
+==============================================================================
+3. Commands                                  *markdown-tools-commands*
+
+                                                *:MarkdownToolsWrapLinks*
+:[range]MarkdownToolsWrapLinks
+        Wrap bare HTTP(S) URLs and POSIX paths. With no explicit range the
+        whole buffer is processed. Protected Markdown syntax is unchanged.
+
+                                                *:MarkdownToolsCycleTask*
+:MarkdownToolsCycleTask
+        Cycle the current physical line through plain, list, unchecked task,
+        checked task, and plain states while preserving indentation.
+
+                                                *:MarkdownToolsPdf*
+:MarkdownToolsPdf
+        Generate a PDF asynchronously next to the current named buffer using
+        its in-memory content. Reports missing Pandoc or Typst executables.
+
+==============================================================================
+4. Lua API                                   *markdown-tools-api*
+
+setup({opts})
+        Validate configuration, install the Markdown FileType autocmd, and
+        attach existing Markdown buffers.
+
+attach({bufnr})
+        Install configured buffer-local commands and mappings.
+
+wrap_links({opts})
+        Options: bufnr, line1, line2. Returns a table with `replacements` and
+        `used_fallback`, or nil plus an error when disabled.
+
+cycle_task({opts})
+        Options: bufnr, row, marker. Returns row, previous state, next state,
+        and updated line, or nil plus an error.
+
+format_selection({kind}, {opts})
+        Kinds: italic, bold, code, link. A link target may be supplied as
+        `opts.target`; otherwise `vim.ui.input()` is used.
+
+generate_pdf({opts})
+        Options: bufnr and on_complete. Returns a `vim.SystemObj`, or nil plus
+        an error. Completion receives ok, code, signal, stdout, stderr,
+        output_path, and argv.
+
+Pure helpers:
+
+    require("markdown-tools").links.wrap_lines(lines, opts)
+    require("markdown-tools").tasks.cycle_line(line, marker)
+
+==============================================================================
+5. Link fallback                             *markdown-tools-fallback*
+
+The scanner always protects YAML frontmatter, backtick and tilde fences,
+inline code, existing Markdown links and images, link definitions, URI
+autolinks, and already wrapped targets. Available Tree-sitter parsers augment
+these protected ranges. If a parser is missing, wrapping continues and warns
+once per buffer unless `links.notify_fallback` is false.
+
+Use: >vim
+
+    :checkhealth markdown-tools
+<
+Set `links.treesitter = false` to use only the scanner without a fallback
+warning.
+
+==============================================================================
+6. PDF                                       *markdown-tools-pdf*
+
+Defaults:
+
+    pdf.pandoc       "pandoc"
+    pdf.typst        "typst"
+    pdf.toc          true
+    pdf.toc_depth    3
+    pdf.extra_args   {}
+    pdf.preprocess   nil
+    pdf.output_path  nil
+
+The default sibling output replaces the final source extension with `.pdf`.
+`pdf.preprocess(content, context)` runs synchronously before Pandoc and must
+return a string. `pdf.output_path(context)` must return a non-empty path.
+Context contains bufnr, input_path, output_path (preprocess only), and cwd.
+
+vim:tw=78:ts=8:noet:ft=help:norl:

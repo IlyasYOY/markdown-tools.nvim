@@ -1,0 +1,29 @@
+name: check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        neovim: [v0.11.7, v0.12.4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: rhysd/action-setup-vim@v1
+        with:
+          version: ${{ matrix.neovim }}
+          neovim: true
+      - uses: leafo/gh-actions-lua@v11
+        with:
+          luaVersion: luajit-2.1
+      - uses: leafo/gh-actions-luarocks@v5
+      - run: luarocks install luacheck
+      - uses: JohnnyMorganz/stylua-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: v2.4.0
+          args: --check lua plugin tests
+      - run: make lint test help-check
