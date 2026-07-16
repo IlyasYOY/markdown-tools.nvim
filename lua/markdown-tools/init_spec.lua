@@ -148,6 +148,52 @@ describe("markdown-tools integration", function()
         assert(line == "[selected](https://example.com) text", line)
     end)
 
+    it("formats a linewise selection through the configured mapping", function()
+        local bufnr = markdown_buffer { "first line", "second line", "after" }
+        markdown_tools.setup { keymaps = { code = ",fc" } }
+        vim.api.nvim_win_set_cursor(0, { 1, 0 })
+        vim.cmd.normal "Vj"
+        assert.equal("V", vim.fn.mode())
+
+        local mapping = vim.fn.maparg(",fc", "x", false, true)
+        assert.equal("function", type(mapping.callback))
+        mapping.callback()
+
+        assert.same({
+            "```",
+            "first line",
+            "second line",
+            "```",
+            "after",
+        }, vim.api.nvim_buf_get_lines(bufnr, 0, -1, false))
+        assert.equal("V", vim.fn.mode())
+        assert.same({ 0, 2, 1, 0 }, vim.fn.getpos "v")
+        assert.same({ 3, 0 }, vim.api.nvim_win_get_cursor(0))
+    end)
+
+    it("preserves a reverse linewise selection after fencing", function()
+        local bufnr = markdown_buffer { "first line", "second line", "after" }
+        markdown_tools.setup { keymaps = { code = ",fc" } }
+        vim.api.nvim_win_set_cursor(0, { 2, 0 })
+        vim.cmd.normal "Vk"
+        assert.equal("V", vim.fn.mode())
+
+        local mapping = vim.fn.maparg(",fc", "x", false, true)
+        assert.equal("function", type(mapping.callback))
+        mapping.callback()
+
+        assert.same({
+            "```",
+            "first line",
+            "second line",
+            "```",
+            "after",
+        }, vim.api.nvim_buf_get_lines(bufnr, 0, -1, false))
+        assert.equal("V", vim.fn.mode())
+        assert.same({ 0, 3, 1, 0 }, vim.fn.getpos "v")
+        assert.same({ 2, 0 }, vim.api.nvim_win_get_cursor(0))
+    end)
+
     it("builds an asynchronous PDF job from current buffer content", function()
         local bufnr = markdown_buffer(
             { "# Current", "", "unsaved content" },

@@ -90,7 +90,9 @@ cycle_task({opts})
 
 format_selection({kind}, {opts})
         Kinds: italic, bold, code, link. A link target may be supplied as
-        `opts.target`; otherwise `vim.ui.input()` is used.
+        `opts.target`; otherwise `vim.ui.input()` is used. Code uses inline
+        backticks for characterwise and blockwise selections, and a three-
+        backtick fenced block for linewise selections.
 
 generate_pdf({opts})
         Options: bufnr and on_complete. Returns a `vim.SystemObj`, or nil plus

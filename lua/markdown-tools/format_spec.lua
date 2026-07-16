@@ -35,6 +35,40 @@ describe("markdown-tools.format", function()
         )
     end)
 
+    it("keeps code inline outside linewise visual mode", function()
+        local ok, err = formatter.apply("code", {
+            bufnr = bufnr,
+            range = range(8),
+        })
+        assert.is_true(ok, err)
+        assert.equal(
+            "`selected` text",
+            vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)[1]
+        )
+    end)
+
+    it("wraps a linewise selection in a fenced code block", function()
+        vim.api.nvim_buf_set_lines(
+            bufnr,
+            0,
+            -1,
+            false,
+            { "first line", "  second line", "after" }
+        )
+        vim.api.nvim_set_current_buf(bufnr)
+        vim.api.nvim_win_set_cursor(0, { 1, 0 })
+        vim.cmd.normal "Vj"
+        local ok, err = formatter.apply("code", { bufnr = bufnr })
+        assert.is_true(ok, err)
+        assert.same({
+            "```",
+            "first line",
+            "  second line",
+            "```",
+            "after",
+        }, vim.api.nvim_buf_get_lines(bufnr, 0, -1, false))
+    end)
+
     it("formats a link with an explicit target", function()
         local ok, err = formatter.apply("link", {
             bufnr = bufnr,

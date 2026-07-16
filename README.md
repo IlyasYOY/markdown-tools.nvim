@@ -132,9 +132,11 @@ line-based and does not require Tree-sitter.
 ## Visual formatting
 
 Opt-in visual mappings call the same Lua API for `italic`, `bold`, `code`, and
-`link`. The link helper prompts with `vim.ui.input()` and uses the `+` register
-as its editable initial value. Cancelling the prompt or submitting an empty
-target leaves the selection unchanged.
+`link`. Code formatting uses single backticks for characterwise and blockwise
+selections; linewise selections are wrapped in an unindented fenced block with
+three backticks. The link helper prompts with `vim.ui.input()` and uses the `+`
+register as its editable initial value. Cancelling the prompt or submitting an
+empty target leaves the selection unchanged.
 
 ## PDF generation
 

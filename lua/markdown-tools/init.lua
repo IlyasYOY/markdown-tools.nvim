@@ -264,7 +264,11 @@ function M.attach(bufnr)
         for _, spec in ipairs {
             { "italic", config.keymaps.italic, "format selection as italic" },
             { "bold", config.keymaps.bold, "format selection as bold" },
-            { "code", config.keymaps.code, "format selection as inline code" },
+            {
+                "code",
+                config.keymaps.code,
+                "format selection as inline or fenced code",
+            },
             { "link", config.keymaps.link, "format selection as a link" },
         } do
             create_keymap(
