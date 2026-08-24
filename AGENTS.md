@@ -27,7 +27,7 @@
 
 - `make check` is the canonical non-mutating lint, test, and help check.
 - `make test NVIM_VERSION=v0.11.7` verifies the minimum supported version.
-- `make test NVIM_VERSION=v0.12.4` verifies the current stable version.
+- `make test NVIM_VERSION=v0.12.5` verifies the current stable version.
 - `make test NVIM_VERSION=nightly` is the compatibility probe.
 - `make test-pdf-e2e` runs the real Pandoc + Typst smoke test.
 - `make format` formats Lua sources.
