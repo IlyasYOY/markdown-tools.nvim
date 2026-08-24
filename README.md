@@ -205,7 +205,7 @@ See `:help markdown-tools` for the complete Vim help reference.
 ```bash
 make check
 make test NVIM_VERSION=v0.11.7
-make test NVIM_VERSION=v0.12.4
+make test NVIM_VERSION=v0.12.5
 make test NVIM_VERSION=nightly
 make test-pdf-e2e
 ```
